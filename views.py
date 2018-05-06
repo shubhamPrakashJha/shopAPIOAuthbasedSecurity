@@ -8,7 +8,10 @@ from flask.ext.httpauth import HTTPBasicAuth
 import json
 
 # NEW IMPORTS
-
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
+import httplib2
+import requests
+from flask import make_response
 
 auth = HTTPBasicAuth()
 
