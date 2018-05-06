@@ -98,10 +98,12 @@ def login(provider):
 			session.commit()
 
 		# STEP 4 - Make token
-
+		token = user.generate_auth_token(600)
 
 		# STEP 5 - Send back token to the client
-
+		return jsonify(
+			{'token': token.decode('ascii')}
+		)
 
 	# return jsonify({'token': token.decode('ascii'), 'duration': 600})
 
