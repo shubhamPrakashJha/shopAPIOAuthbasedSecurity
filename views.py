@@ -8,10 +8,11 @@ from flask.ext.httpauth import HTTPBasicAuth
 import json
 
 # NEW IMPORTS
-from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
 import httplib2
-import requests
 from flask import make_response
+import requests
 
 auth = HTTPBasicAuth()
 
@@ -50,11 +51,16 @@ def start():
 def login(provider):
 	# STEP 1 - Parse the auth code
 
-
 		# STEP 2 - Exchange for a token
+
+		# Check that the access token is valid.
+
 
 		# STEP 3 - Find User or make a new one
 
+		# Get user info
+
+		# see if user exists, if it doesn't make a new one
 
 		# STEP 4 - Make token
 
@@ -62,7 +68,7 @@ def login(provider):
 		# STEP 5 - Send back token to the client
 
 
-
+	# return jsonify({'token': token.decode('ascii'), 'duration': 600})
 
 
 @app.route('/token')
@@ -83,13 +89,17 @@ def new_user():
 	if session.query(User).filter_by(username=username).first() is not None:
 		print "existing user"
 		user = session.query(User).filter_by(username=username).first()
-		return jsonify({'message': 'user already exists'}), 200
+		return jsonify({
+						   'message': 'user already exists'}), 200  # , {
+		# 'Location': url_for('get_user', id = user.id, _external = True)}
 
 	user = User(username=username)
 	user.hash_password(password)
 	session.add(user)
 	session.commit()
-	return jsonify({'username': user.username}), 201
+	return jsonify({
+					   'username': user.username}), 201  # , {'Location':
+	# url_for('get_user', id = user.id, _external = True)}
 
 
 @app.route('/api/users/<int:id>')
@@ -108,4 +118,6 @@ def get_resource():
 
 if __name__ == '__main__':
 	app.debug = True
+	# app.config['SECRET_KEY'] = ''.join(random.choice(
+	# string.ascii_uppercase + string.digits) for x in xrange(32))
 	app.run(host='0.0.0.0', port=5000)
