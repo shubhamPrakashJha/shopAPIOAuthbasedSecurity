@@ -50,7 +50,7 @@ def start():
 @app.route('/oauth/<provider>', methods=['POST'])
 def login(provider):
 	# STEP 1 - Parse the auth code
-
+	auth_code = request.json.get('auth_code')
 		# STEP 2 - Exchange for a token
 
 		# Check that the access token is valid.
