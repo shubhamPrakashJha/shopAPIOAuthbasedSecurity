@@ -64,7 +64,16 @@ def login(provider):
 			return response
 
 		# Check that the access token is valid.
-
+		access_token = credentials.access_token
+		url = ('ttps://www.googleapis.com/oauth2/v1/tokeninfo?access_token'
+			   '=%s' % access_token)
+		h = httplib2.Http()
+		header, body = h.request(url, 'GET')
+		result = json.loads(body)
+		# If there was an error in the access token info, abort.
+		if result.get('error') is not None:
+			response = make_response(json.dumps(result.get('error')), 500)
+			response.headers['Content-Type'] = 'application/json'
 
 		# STEP 3 - Find User or make a new one
 
