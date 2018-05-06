@@ -51,7 +51,17 @@ def start():
 def login(provider):
 	# STEP 1 - Parse the auth code
 	auth_code = request.json.get('auth_code')
+	if provider == "google":
 		# STEP 2 - Exchange for a token
+		try:
+			oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+			oauth_flow.redirect_uri = 'postmessage'
+			credentials = oauth_flow.step2_exchange(auth_code)
+		except FlowExchangeError:
+			response = make_response(json.dumps('Failed to upgrade the '
+												'autherization code.'), 401)
+			response.headers['Content-Type'] = 'application/json'
+			return response
 
 		# Check that the access token is valid.
 
