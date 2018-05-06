@@ -51,6 +51,7 @@ def start():
 def login(provider):
 	# STEP 1 - Parse the auth code
 	auth_code = request.json.get('auth_code')
+	print "STEP 1 Complete, auth_code : %s" % auth_code
 	if provider == "google":
 		# STEP 2 - Exchange for a token
 		try:
@@ -75,11 +76,26 @@ def login(provider):
 			response = make_response(json.dumps(result.get('error')), 500)
 			response.headers['Content-Type'] = 'application/json'
 
+		print "STEP 2 Complete, access_token : %s" % access_token
 		# STEP 3 - Find User or make a new one
 
 		# Get user info
+		userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+		params = {'access_token': credentials.access_token, 'alt': 'json'}
+		answer = requests.get(userinfo_url, params=params)
+
+		data = answer.json()
+
+		name = data['name']
+		picture = data['picture']
+		email = data['email']
 
 		# see if user exists, if it doesn't make a new one
+		user = session.query(User).filter_by(email=email).first()
+		if not user:
+			user = User(name=name, email=email, picture=picture)
+			session.add(user)
+			session.commit()
 
 		# STEP 4 - Make token
 
